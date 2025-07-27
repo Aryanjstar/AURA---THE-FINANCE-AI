@@ -1,0 +1,22 @@
+runtime: nodejs20
+
+service: default
+
+env_variables:
+  NODE_ENV: production
+  PORT: 8080
+  # Add your environment variables here
+  GEMINI_API_KEY: AIzaSyCxP7rUxqx2wXmZeIvI_fh4PWk9Y00vUR8
+  FIREBASE_PROJECT_ID: aura-financial-assistant
+  FIREBASE_CLIENT_EMAIL: dummy@aura-financial-assistant.iam.gserviceaccount.com
+  FIREBASE_PRIVATE_KEY: dummy-key
+  FI_MCP_URL: https://fi-mcp-dot-aura-financial-assistant.uc.r.appspot.com
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.6
+
+handlers:
+  - url: /.*
+    script: auto

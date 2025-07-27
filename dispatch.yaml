@@ -1,0 +1,8 @@
+dispatch:
+  # Route Fi MCP API calls to the Go service
+  - url: "*/fi-mcp/*"
+    service: fi-mcp
+
+  # Route all other traffic to the default Node.js service
+  - url: "*/*"
+    service: default

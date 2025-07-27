@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AURA - AI-Powered Financial Platform</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles.css" />
+		<!-- Firebase App (the core Firebase SDK) -->
+		<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+		<script src="firebase-auth.js"></script>
+		<link
+			rel="icon"
+			type="image/svg+xml"
+			href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJMMTI0IDE2TDE2IDMwTDI4IDE2TDE2IDJaIiBmaWxsPSIjMDA2NkZGIi8+CjxwYXRoIGQ9Ik0xNiAyTDggMTZMMTYgMzBMNCAxNkwxNiAyWiIgZmlsbD0iIzAwNTJDQyIvPgo8L3N2Zz4K"
+		/>
+	</head>
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar">
+			<div class="nav-container">
+				<div class="nav-brand">
+					<div class="logo">
+						<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+							<path d="M16 2L24 16L16 30L28 16L16 2Z" fill="#0066FF" />
+							<path d="M16 2L8 16L16 30L4 16L16 2Z" fill="#0052CC" />
+						</svg>
+						<span>AURA</span>
+					</div>
+					<span class="tagline">AI Financial Intelligence</span>
+				</div>
+				<div class="nav-menu">
+					<a href="#features" class="nav-link">Features</a>
+					<a href="#agents" class="nav-link">AI Agents</a>
+					<a href="#analytics" class="nav-link">Analytics</a>
+					<a href="#security" class="nav-link">Security</a>
+					<button class="btn-primary" id="navLoginButton">Login</button>
+				</div>
+				<div class="mobile-menu-toggle" id="mobileMenuToggle">
+					<span></span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero Section -->
+		<section class="hero">
+			<div class="hero-container">
+				<div class="hero-content">
+					<div class="hero-badge">
+						<span class="badge-icon">🚀</span>
+						Powered by Gemini 2.0 Flash & Multi-Agent AI
+					</div>
+					<h1 class="hero-title">
+						Your Personal
+						<span class="gradient-text">Financial Intelligence</span>
+						Platform
+					</h1>
+					<p class="hero-description">
+						AURA blends 5 AI agents with real-time market data to deliver
+						personalized financial insights and strategies—powered by LLMs and
+						FI Money MCP context.
+					</p>
+					<div class="hero-cta-text">
+						<strong
+							>🚀 Get a sneak peek into Aura's powerful analytics! Log in as
+							a demo user, you'll see exactly how your portfolio insights will
+							look once you join.</strong
+						>
+					</div>
+					<div class="hero-stats">
+						<div class="stat">
+							<div class="stat-number">5</div>
+							<div class="stat-label">AI Agents</div>
+						</div>
+						<div class="stat">
+							<div class="stat-number">Real-time</div>
+							<div class="stat-label"> Analysis</div>
+						</div>
+						<div class="stat">
+							<div class="stat-number">24/7</div>
+							<div class="stat-label">Monitoring</div>
+						</div>
+					</div>
+					<div class="hero-actions">
+						<button class="btn-primary btn-large" id="heroChatButton">
+							<span class="btn-icon">🤖</span>
+							Talk with AI
+						</button>
+					</div>
+				</div>
+				<div class="hero-visual">
+					<div class="floating-cards">
+						<div class="floating-card card-1">
+							<div class="card-icon">🎯</div>
+							<div class="card-title">Strategist Agent</div>
+							<div class="card-desc">Personalized financial plans</div>
+							<div class="card-details">
+								<p>
+									Creates comprehensive strategies based on your goals, risk
+									tolerance, and timeline. Specializes in long-term planning and
+									asset allocation.
+								</p>
+							</div>
+						</div>
+						<div class="floating-card card-2">
+							<div class="card-icon">🔢</div>
+							<div class="card-title">Quant Agent</div>
+							<div class="card-desc">XIRR, CAGR, Volatility</div>
+							<div class="card-details">
+								<p>
+									Performs sophisticated quantitative analysis using advanced
+									mathematical models. Calculates returns, risk metrics, and
+									portfolio performance.
+								</p>
+							</div>
+						</div>
+						<div class="floating-card card-3">
+							<div class="card-icon">⚡</div>
+							<div class="card-title">Doer Agent</div>
+							<div class="card-desc">Actionable steps</div>
+							<div class="card-details">
+								<p>
+									Converts strategies into specific action plans with timelines
+									and platforms. Guides you through implementation step-by-step.
+								</p>
+							</div>
+						</div>
+						<div class="floating-card card-4">
+							<div class="card-icon">📈</div>
+							<div class="card-title">Realist Agent</div>
+							<div class="card-desc">Real-time data</div>
+							<div class="card-details">
+								<p>
+									Fetches live market data and integrates with your Fi Money
+									account. Provides real-time insights and market intelligence.
+								</p>
+							</div>
+						</div>
+						<div class="floating-card card-5">
+							<div class="card-icon">💬</div>
+							<div class="card-title">Communicator</div>
+							<div class="card-desc">Personalized insights</div>
+							<div class="card-details">
+								<p>
+									Translates complex analysis into clear, personalized
+									communication. Delivers insights tailored to your financial
+									journey.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Features Section -->
+		<section id="features" class="features">
+			<div class="container">
+				<div class="section-header">
+					<h2 class="section-title">Intelligent Financial Features</h2>
+					<p class="section-description">
+						Advanced AI capabilities powered by multi-agent architecture
+					</p>
+				</div>
+				<div class="features-grid">
+					<div class="feature-card">
+						<div class="feature-icon">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+								<path
+									d="M16 4L20 12L28 8L24 16L28 24L20 20L16 28L12 20L4 24L8 16L4 8L12 12L16 4Z"
+									fill="currentColor"
+								/>
+							</svg>
+						</div>
+						<h3 class="feature-title">Multi-Agent Intelligence</h3>
+						<p class="feature-description">
+							5 specialized AI agents work together to analyze your finances
+							from every angle
+						</p>
+						<ul class="feature-list">
+							<li>Strategist for planning</li>
+							<li>Quant for analysis</li>
+							<li>Doer for execution</li>
+							<li>Realist for data</li>
+							<li>Communicator for insights</li>
+						</ul>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+								<path
+									d="M8 6H24V10H8V6ZM8 14H24V18H8V14ZM8 22H24V26H8V22Z"
+									fill="currentColor"
+								/>
+							</svg>
+						</div>
+						<h3 class="feature-title">Real-time Market Data</h3>
+						<p class="feature-description">
+							Live market feeds from multiple sources for accurate analysis
+						</p>
+						<ul class="feature-list">
+							<li>NSE/BSE live data</li>
+							<li>Mutual fund NAVs</li>
+							<li>Currency rates</li>
+							<li>Economic indicators</li>
+							<li>Sector performance</li>
+						</ul>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+								<path
+									d="M16 2L18.5 13.5L30 16L18.5 18.5L16 30L13.5 18.5L2 16L13.5 13.5L16 2Z"
+									fill="currentColor"
+								/>
+							</svg>
+						</div>
+						<h3 class="feature-title">Advanced Analytics</h3>
+						<p class="feature-description">
+							Sophisticated financial metrics and risk analysis
+						</p>
+						<ul class="feature-list">
+							<li>XIRR calculation</li>
+							<li>CAGR analysis</li>
+							<li>Volatility measurement</li>
+							<li>Sharpe ratio</li>
+							<li>Risk assessment</li>
+						</ul>
+					</div>
+					<div class="feature-card">
+						<div class="feature-icon">
+							<svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+								<path
+									d="M16 4C21.5228 4 26 8.47715 26 14V18C26 23.5228 21.5228 28 16 28C10.4772 28 6 23.5228 6 18V14C6 8.47715 10.4772 4 16 4Z"
+									fill="currentColor"
+								/>
+							</svg>
+						</div>
+						<h3 class="feature-title">Secure Data Integration</h3>
+						<p class="feature-description">
+							Bank-grade security with encrypted data processing
+						</p>
+						<ul class="feature-list">
+							<li>Fi Money MCP integration</li>
+							<li>End-to-end encryption</li>
+							<li>Zero data storage</li>
+							<li>GDPR compliant</li>
+							<li>Real-time processing</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- AI Agents Section -->
+		<section id="agents" class="agents">
+			<div class="container">
+				<div class="section-header">
+					<h2 class="section-title">Meet Your AI Financial Team</h2>
+					<p class="section-description">
+						Each agent specializes in different aspects of financial management
+					</p>
+				</div>
+				<div class="agents-grid">
+					<div class="agent-card">
+						<div class="agent-avatar">🎯</div>
+						<h3 class="agent-name">Strategist Agent</h3>
+						<p class="agent-role">Financial Planner</p>
+						<p class="agent-description">
+							Creates comprehensive, personalized financial strategies based on
+							your goals, risk tolerance, and current situation.
+						</p>
+						<div class="agent-capabilities">
+							<span class="capability">Goal Planning</span>
+							<span class="capability">Risk Assessment</span>
+							<span class="capability">Asset Allocation</span>
+						</div>
+					</div>
+					<div class="agent-card">
+						<div class="agent-avatar">🔢</div>
+						<h3 class="agent-name">Quant Agent</h3>
+						<p class="agent-role">Financial Analyst</p>
+						<p class="agent-description">
+							Performs sophisticated quantitative analysis using advanced
+							mathematical models and statistical methods.
+						</p>
+						<div class="agent-capabilities">
+							<span class="capability">XIRR/CAGR</span>
+							<span class="capability">Volatility</span>
+							<span class="capability">Risk Metrics</span>
+						</div>
+					</div>
+					<div class="agent-card">
+						<div class="agent-avatar">⚡</div>
+						<h3 class="agent-name">Doer Agent</h3>
+						<p class="agent-role">Implementation Specialist</p>
+						<p class="agent-description">
+							Converts strategies into specific, actionable steps with
+							timelines, platforms, and exact amounts.
+						</p>
+						<div class="agent-capabilities">
+							<span class="capability">Action Plans</span>
+							<span class="capability">Timeline Management</span>
+							<span class="capability">Platform Guidance</span>
+						</div>
+					</div>
+					<div class="agent-card">
+						<div class="agent-avatar">📈</div>
+						<h3 class="agent-name">Realist Agent</h3>
+						<p class="agent-role">Data Integration Expert</p>
+						<p class="agent-description">
+							Fetches and processes real-time financial data from multiple
+							sources for accurate analysis.
+						</p>
+						<div class="agent-capabilities">
+							<span class="capability">Market Data</span>
+							<span class="capability">Fi MCP Integration</span>
+							<span class="capability">Data Validation</span>
+						</div>
+					</div>
+					<div class="agent-card">
+						<div class="agent-avatar">💬</div>
+						<h3 class="agent-name">Communicator Agent</h3>
+						<p class="agent-role">Engagement Specialist</p>
+						<p class="agent-description">
+							Translates complex analysis into clear, personalized communication
+							and actionable insights.
+						</p>
+						<div class="agent-capabilities">
+							<span class="capability">Personalization</span>
+							<span class="capability">Multi-channel</span>
+							<span class="capability">Progress Updates</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Analytics Dashboard Preview -->
+		<section id="analytics" class="analytics-preview">
+			<div class="container">
+				<div class="section-header">
+					<h2 class="section-title">Real-time Analytics Dashboard</h2>
+					<p class="section-description">
+						Monitor your financial health with live metrics and insights
+					</p>
+				</div>
+				<div class="dashboard-preview">
+					<div class="dashboard-card">
+						<h4>Portfolio Performance</h4>
+						<div class="metric-grid">
+							<div class="metric">
+								<span class="metric-label">Net Worth</span>
+								<span class="metric-value">₹25,67,890</span>
+								<span class="metric-change positive">+12.5%</span>
+							</div>
+							<div class="metric">
+								<span class="metric-label">XIRR</span>
+								<span class="metric-value">14.2%</span>
+								<span class="metric-change positive">+1.8%</span>
+							</div>
+							<div class="metric">
+								<span class="metric-label">Volatility</span>
+								<span class="metric-value">18.3%</span>
+								<span class="metric-change neutral">-0.5%</span>
+							</div>
+						</div>
+					</div>
+					<div class="dashboard-card">
+						<h4>Asset Allocation</h4>
+						<div class="allocation-chart">
+							<div class="allocation-item">
+								<span class="allocation-color equity"></span>
+								<span class="allocation-label">Equity (65%)</span>
+								<span class="allocation-value">₹16,69,129</span>
+							</div>
+							<div class="allocation-item">
+								<span class="allocation-color debt"></span>
+								<span class="allocation-label">Debt (25%)</span>
+								<span class="allocation-value">₹6,41,973</span>
+							</div>
+							<div class="allocation-item">
+								<span class="allocation-color gold"></span>
+								<span class="allocation-label">Gold (10%)</span>
+								<span class="allocation-value">₹2,56,789</span>
+							</div>
+						</div>
+					</div>
+					<div class="dashboard-card">
+						<h4>Recent Actions</h4>
+						<div class="actions-list">
+							<div class="action-item">
+								<span class="action-icon">📈</span>
+								<div class="action-content">
+									<span class="action-title">SIP Increased</span>
+									<span class="action-desc"
+										>Monthly SIP increased to ₹15,000</span
+									>
+								</div>
+								<span class="action-time">2h ago</span>
+							</div>
+							<div class="action-item">
+								<span class="action-icon">🎯</span>
+								<div class="action-content">
+									<span class="action-title">Goal Updated</span>
+									<span class="action-desc"
+										>Retirement goal adjusted to ₹5Cr</span
+									>
+								</div>
+								<span class="action-time">1d ago</span>
+							</div>
+							<div class="action-item">
+								<span class="action-icon">⚖️</span>
+								<div class="action-content">
+									<span class="action-title">Portfolio Rebalanced</span>
+									<span class="action-desc">Allocation optimized for risk</span>
+								</div>
+								<span class="action-time">3d ago</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Analysis Modal -->
+		<div id="analysisModal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>Start Your Financial Analysis</h3>
+					<button class="modal-close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="phoneNumber">Phone Number</label>
+						<input
+							type="tel"
+							id="phoneNumber"
+							placeholder="Enter your 10-digit phone number"
+							maxlength="10"
+						/>
+						<div class="input-help">
+							We'll use this to fetch your financial data securely via Fi Money
+							MCP
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="userGoals">Primary Financial Goal</label>
+						<select id="userGoals">
+							<option value="retirement">Retirement Planning</option>
+							<option value="home">Home Purchase</option>
+							<option value="education">Education Fund</option>
+							<option value="emergency">Emergency Fund</option>
+							<option value="wealth">Wealth Creation</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="riskProfile">Risk Profile</label>
+						<select id="riskProfile">
+							<option value="low">Conservative (Low Risk)</option>
+							<option value="medium">Balanced (Medium Risk)</option>
+							<option value="high">Aggressive (High Risk)</option>
+						</select>
+					</div>
+					<div class="demo-accounts">
+						<h4>Demo Accounts Available:</h4>
+						<div class="demo-list">
+							<button class="demo-account" data-phone="2222222222">
+								2222222222 - Complete Portfolio (Large MF)
+							</button>
+							<button class="demo-account" data-phone="7777777777">
+								7777777777 - Debt-Heavy Portfolio
+							</button>
+							<button class="demo-account" data-phone="8888888888">
+								8888888888 - SIP Investor
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn-secondary" id="cancelAnalysisButton">
+						Cancel
+					</button>
+					<button class="btn-primary" id="startAnalysisButton">
+						<span class="btn-icon">🚀</span>
+						Start Analysis
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Progress Modal -->
+		<div id="progressModal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>Analyzing Your Portfolio</h3>
+				</div>
+				<div class="modal-body">
+					<div class="progress-container">
+						<div class="progress-bar">
+							<div class="progress-fill" id="progressFill"></div>
+						</div>
+						<div class="progress-text" id="progressText">
+							Initializing AI agents...
+						</div>
+						<div class="progress-percentage" id="progressPercentage">0%</div>
+					</div>
+					<div class="agent-status">
+						<div class="agent-status-item" id="strategist-status">
+							<span class="status-icon">🎯</span>
+							<span class="status-name">Strategist Agent</span>
+							<span class="status-indicator waiting">⏳</span>
+						</div>
+						<div class="agent-status-item" id="quant-status">
+							<span class="status-icon">🔢</span>
+							<span class="status-name">Quant Agent</span>
+							<span class="status-indicator waiting">⏳</span>
+						</div>
+						<div class="agent-status-item" id="doer-status">
+							<span class="status-icon">⚡</span>
+							<span class="status-name">Doer Agent</span>
+							<span class="status-indicator waiting">⏳</span>
+						</div>
+						<div class="agent-status-item" id="realist-status">
+							<span class="status-icon">📈</span>
+							<span class="status-name">Realist Agent</span>
+							<span class="status-indicator working">🔄</span>
+						</div>
+						<div class="agent-status-item" id="communicator-status">
+							<span class="status-icon">💬</span>
+							<span class="status-name">Communicator Agent</span>
+							<span class="status-indicator waiting">⏳</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chatbot Modal -->
+		<div id="chatbotModal" class="modal">
+			<div class="modal-content large">
+				<div class="modal-header">
+					<h3>AURA AI Financial Assistant</h3>
+					<button class="modal-close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div class="chat-container">
+						<div class="chat-messages" id="chatMessages">
+							<div class="chat-message assistant">
+								<div class="message-avatar">🤖</div>
+								<div class="message-content">
+									<div class="message-text">
+										Hello! I'm AURA, your AI Financial Assistant. I can help you
+										with:
+										<ul>
+											<li>📊 Portfolio analysis and performance review</li>
+											<li>📈 Investment recommendations and strategies</li>
+											<li>💰 Financial planning and goal setting</li>
+											<li>📋 Transaction analysis and spending insights</li>
+											<li>🎯 Risk assessment and asset allocation</li>
+										</ul>
+										What would you like to know about your finances today?
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="chat-input-container">
+							<div
+								class="typing-indicator"
+								id="typingIndicator"
+								style="display: none"
+							>
+								<div class="typing-dots">
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+								<span>AURA is thinking...</span>
+							</div>
+							<div class="chat-input-wrapper">
+								<input
+									type="text"
+									id="chatInput"
+									placeholder="Ask me anything about your finances..."
+								/>
+								<button id="sendButton">
+									<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+										<path
+											d="M2 10L18 2L12 10L18 18L2 10Z"
+											fill="currentColor"
+										/>
+									</svg>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Results Modal -->
+		<div id="resultsModal" class="modal">
+			<div class="modal-content large">
+				<div class="modal-header">
+					<h3>Your Financial Analysis Results</h3>
+					<button class="modal-close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<div id="analysisResults">
+						<!-- Results will be populated here -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="container">
+				<div class="footer-content">
+					<div class="footer-brand">
+						<div class="logo">
+							<svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+								<path d="M16 2L24 16L16 30L28 16L16 2Z" fill="#0066FF" />
+								<path d="M16 2L8 16L16 30L4 16L16 2Z" fill="#0052CC" />
+							</svg>
+							<span>AURA</span>
+						</div>
+						<p>AI-powered financial intelligence platform</p>
+					</div>
+					<div class="footer-links">
+						<div class="footer-column">
+							<h4>Platform</h4>
+							<a href="#features">Features</a>
+							<a href="#agents">AI Agents</a>
+							<a href="#analytics">Analytics</a>
+							<a href="#security">Security</a>
+						</div>
+						<div class="footer-column">
+							<h4>Technology</h4>
+							<a href="#">Gemini 2.0 Flash</a>
+							<a href="#">Multi-Agent AI</a>
+							<a href="#">Fi Money MCP</a>
+							<a href="#">Real-time Data</a>
+						</div>
+						<div class="footer-column">
+							<h4>Support</h4>
+							<a href="#">Documentation</a>
+							<a href="#">API Reference</a>
+							<a href="#">Help Center</a>
+							<a href="#">Contact</a>
+						</div>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<p>&copy; 2025 AURA Financial Platform. All rights reserved.</p>
+					<div class="footer-status">
+						<span class="status-indicator online"></span>
+						<span>All systems operational</span>
+					</div>
+				</div>
+			</div>
+		</footer>
+
+		<script src="app.js"></script>
+	</body>
+</html>
