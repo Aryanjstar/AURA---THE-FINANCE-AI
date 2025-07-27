@@ -625,7 +625,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🙏 Acknowledgments
 
 - **Google Cloud** for reliable infrastructure
-- **Gemini AI** for powerful language models
+- **Gemini AI** for powerful language models and reasoning
 - **Fi Money** for financial data integration
 - **Open Source Community** for amazing tools and libraries
 
