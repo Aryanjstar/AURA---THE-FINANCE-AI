@@ -301,7 +301,7 @@ app.get("/api/status", async (req, res) => {
         platform: 'AURA Financial Intelligence',
         version: '2.0.0',
         developer: 'Aryan Jaiswal',
-        website: 'https://aryanjaiswal.me',
+        website: 'https://aryanjaiswal.in',
         services: {
             openai: openaiService.getStatus(),
             rag: ragService.getStatus(),

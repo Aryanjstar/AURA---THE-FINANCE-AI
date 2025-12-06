@@ -2,11 +2,10 @@
   "name": "aura-finance-ai",
   "version": "1.0.0",
   "description": "AI-Powered Financial Intelligence Platform",
-  "main": "aura-platform/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "cd aura-platform && npm install && node server.js",
-    "install": "cd aura-platform && npm install",
-    "postinstall": "cd aura-platform && npm install"
+    "start": "node server.js",
+    "preinstall": "cd aura-platform && npm install --legacy-peer-deps"
   },
   "engines": {
     "node": ">=20.0.0"
