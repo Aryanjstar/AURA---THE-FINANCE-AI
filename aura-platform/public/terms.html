@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | AURA Financial Platform</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Cpath d='M35 65L50 35L65 65' stroke='white' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='28' r='6' fill='white'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0f0f13;
+            --bg-card: #1c1c26;
+            --accent: #22d3ee;
+            --text: #f1f1f1;
+            --text-secondary: #9ca3af;
+            --border: rgba(255,255,255,0.08);
+        }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+        .logo svg { width: 40px; height: 40px; }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--accent);
+        }
+        h3 {
+            font-size: 1.125rem;
+            margin: 1.5rem 0 0.75rem;
+        }
+        p, ul, ol {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .highlight {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .warning {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+        }
+        .back-link:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        
+        <header>
+            <a href="/" class="logo">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#22d3ee"/>
+                            <stop offset="100%" stop-color="#a78bfa"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="45" fill="url(#logoGrad)"/>
+                    <path d="M35 65L50 35L65 65" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="50" cy="28" r="6" fill="white"/>
+                </svg>
+                AURA
+            </a>
+            <h1>Terms of Service</h1>
+            <p class="last-updated">Last Updated: December 3, 2025</p>
+        </header>
+
+        <main>
+            <div class="highlight warning">
+                <p><strong>Important Disclaimer:</strong> AURA provides AI-powered financial insights for informational purposes only. This is NOT financial advice. Always consult with a qualified financial advisor before making investment decisions.</p>
+            </div>
+
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing or using AURA ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service.</p>
+
+            <h2>2. Description of Service</h2>
+            <p>AURA is an AI-powered financial intelligence platform that provides:</p>
+            <ul>
+                <li>Personalized financial insights using multi-agent AI technology</li>
+                <li>Portfolio analysis and visualization</li>
+                <li>Investment education and information</li>
+                <li>Integration with Fi.Money MCP for real-time financial data</li>
+            </ul>
+
+            <h2>3. User Accounts</h2>
+            <h3>3.1 Account Creation</h3>
+            <ul>
+                <li>You must be at least 18 years old to create an account</li>
+                <li>You must provide accurate and complete information</li>
+                <li>You are responsible for maintaining the security of your account</li>
+            </ul>
+
+            <h3>3.2 Account Security</h3>
+            <ul>
+                <li>You are responsible for all activities under your account</li>
+                <li>Notify us immediately of any unauthorized access</li>
+                <li>We reserve the right to suspend accounts for security reasons</li>
+            </ul>
+
+            <h2>4. Use of Service</h2>
+            <h3>4.1 Permitted Use</h3>
+            <p>You may use AURA for:</p>
+            <ul>
+                <li>Personal financial planning and education</li>
+                <li>Viewing and analyzing your connected financial data</li>
+                <li>Receiving AI-generated insights and recommendations</li>
+            </ul>
+
+            <h3>4.2 Prohibited Use</h3>
+            <p>You may NOT:</p>
+            <ul>
+                <li>Use the Service for any illegal purpose</li>
+                <li>Attempt to gain unauthorized access to our systems</li>
+                <li>Reverse engineer or copy our AI technology</li>
+                <li>Use automated systems to scrape or extract data</li>
+                <li>Impersonate others or provide false information</li>
+                <li>Use the Service to provide financial advice to others for compensation</li>
+            </ul>
+
+            <h2>5. Financial Disclaimer</h2>
+            <div class="highlight warning">
+                <p><strong>NOT FINANCIAL ADVICE:</strong> The information provided by AURA is for educational and informational purposes only. It should not be construed as:</p>
+                <ul>
+                    <li>Professional financial advice</li>
+                    <li>Investment recommendations</li>
+                    <li>Tax advice</li>
+                    <li>Legal advice</li>
+                </ul>
+                <p>Always consult with qualified professionals before making financial decisions. Past performance does not guarantee future results.</p>
+            </div>
+
+            <h2>6. Third-Party Services</h2>
+            <h3>6.1 Fi.Money MCP</h3>
+            <p>Our Service integrates with Fi.Money MCP to access your financial data. By using this integration:</p>
+            <ul>
+                <li>You authorize us to access your Fi.Money data</li>
+                <li>You agree to Fi.Money's terms of service</li>
+                <li>You understand that data availability depends on Fi.Money's service</li>
+            </ul>
+
+            <h3>6.2 Google OAuth</h3>
+            <p>If you sign in with Google:</p>
+            <ul>
+                <li>You agree to Google's terms of service</li>
+                <li>We only access the information you authorize</li>
+            </ul>
+
+            <h2>7. Intellectual Property</h2>
+            <ul>
+                <li>AURA's AI technology, design, and content are our intellectual property</li>
+                <li>You retain ownership of your personal financial data</li>
+                <li>You grant us a license to process your data to provide the Service</li>
+            </ul>
+
+            <h2>8. Limitation of Liability</h2>
+            <p>To the maximum extent permitted by law:</p>
+            <ul>
+                <li>AURA is provided "as is" without warranties</li>
+                <li>We are not liable for any investment losses</li>
+                <li>We are not responsible for third-party service failures</li>
+                <li>Our total liability is limited to fees paid in the last 12 months</li>
+            </ul>
+
+            <h2>9. Indemnification</h2>
+            <p>You agree to indemnify and hold harmless AURA and its creators from any claims arising from your use of the Service or violation of these terms.</p>
+
+            <h2>10. Termination</h2>
+            <ul>
+                <li>You may terminate your account at any time</li>
+                <li>We may suspend or terminate accounts that violate these terms</li>
+                <li>Upon termination, your right to use the Service ceases immediately</li>
+            </ul>
+
+            <h2>11. Changes to Terms</h2>
+            <p>We may modify these terms at any time. Continued use of the Service after changes constitutes acceptance of the new terms.</p>
+
+            <h2>12. Governing Law</h2>
+            <p>These terms are governed by the laws of India. Any disputes shall be resolved in the courts of appropriate jurisdiction in India.</p>
+
+            <h2>13. Contact</h2>
+            <p>For questions about these Terms of Service:</p>
+            <ul>
+                <li>Email: aryanjstar3@gmail.com</li>
+                <li>Website: <a href="https://aryanjaiswal.me" target="_blank">aryanjaiswal.me</a></li>
+                <li>GitHub: <a href="https://github.com/aryanjstar" target="_blank">github.com/aryanjstar</a></li>
+            </ul>
+        </main>
+
+        <footer>
+            <p>© 2025 AURA Financial Platform. All rights reserved.</p>
+            <p>Built by <a href="https://aryanjaiswal.me" target="_blank">Aryan Jaiswal</a></p>
+        </footer>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: fi-mcp-server
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: NODE_ENV
+        value: production
+
