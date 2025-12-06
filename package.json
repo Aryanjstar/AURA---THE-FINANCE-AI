@@ -1,0 +1,17 @@
+{
+  "name": "aura-finance-ai",
+  "version": "1.0.0",
+  "description": "AI-Powered Financial Intelligence Platform",
+  "main": "aura-platform/server.js",
+  "scripts": {
+    "start": "cd aura-platform && npm install && node server.js",
+    "install": "cd aura-platform && npm install",
+    "postinstall": "cd aura-platform && npm install"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "Aryan Jaiswal",
+  "license": "MIT"
+}
+
