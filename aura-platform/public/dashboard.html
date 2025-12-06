@@ -1078,15 +1078,18 @@
                     if (cleanUserData) {
                         const parsed = JSON.parse(cleanUserData);
                         
-                        // Only allow REAL logged in users (email provider)
-                        if (parsed.provider === 'email' && parsed.onboardingComplete) {
+                        // Allow REAL logged in users (email or google provider)
+                        const isRealUser = parsed.provider === 'email' || parsed.provider === 'google';
+                        const hasCompletedOnboarding = parsed.onboardingComplete || parsed.hasCompletedOnboarding;
+                        
+                        if (isRealUser && hasCompletedOnboarding) {
                             // Real user with completed onboarding
                             state.user = parsed;
                             state.phoneNumber = parsed.phoneNumber || '2222222222';
                             demoBanner.style.display = 'none';
                             subtitle.textContent = 'Your complete financial overview powered by AI';
-                        } else if (parsed.provider === 'email') {
-                            // Real user but not onboarded
+                        } else if (isRealUser) {
+                            // Real user but not onboarded - redirect to onboarding
                             state.user = parsed;
                             state.phoneNumber = '2222222222';
                             demoBanner.style.display = 'none';
