@@ -6,6 +6,8 @@
     <title>Sign In | AURA Financial Platform</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Cpath d='M35 65L50 35L65 65' stroke='white' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='28' r='6' fill='white'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -593,19 +595,19 @@
 
     <div class="toast" id="toast"></div>
 
-    <!-- Custom Modal for Google OAuth -->
+    <!-- Custom Modal for OAuth Error -->
     <div class="custom-modal" id="oauthModal">
         <div class="modal-content">
-            <div class="modal-icon">🔐</div>
-            <h3 class="modal-title">Google OAuth Setup Required</h3>
+            <div class="modal-icon">⚠️</div>
+            <h3 class="modal-title">Google Sign-In Issue</h3>
             <div class="modal-text">
-                Google Sign-In requires configuration with:
+                If Google Sign-In doesn't work, please:
                 <ul>
-                    <li>Client ID from Google Cloud Console</li>
-                    <li>Authorized redirect URIs</li>
-                    <li>Domain verification</li>
+                    <li>Disable popup blockers</li>
+                    <li>Allow cookies from Google</li>
+                    <li>Try using Chrome or Edge browser</li>
                 </ul>
-                This will be configured after deployment.
+                Alternatively, use email sign-in or demo accounts below.
             </div>
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-primary" id="closeOauthModal">Got it</button>
@@ -869,9 +871,101 @@
             }
         }
 
+        // Google OAuth Configuration
+        const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
+        
+        function initGoogleAuth() {
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false,
+                    cancel_on_tap_outside: true
+                });
+            }
+        }
+        
+        // Initialize Google Auth when page loads
+        window.onload = function() {
+            // Wait a bit for Google script to load
+            setTimeout(initGoogleAuth, 500);
+        };
+        
         async function signInWithGoogle() {
-            // Show custom themed modal instead of JavaScript alert
-            document.getElementById('oauthModal').classList.add('show');
+            showToast('🔐 Connecting to Google...', 'info');
+            
+            if (typeof google === 'undefined' || !google.accounts) {
+                showToast('⚠️ Google Sign-In is loading, please try again...', 'error');
+                setTimeout(initGoogleAuth, 100);
+                return;
+            }
+            
+            try {
+                // Use One Tap or popup
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed()) {
+                        // One Tap not available, use popup
+                        const client = google.accounts.oauth2.initTokenClient({
+                            client_id: GOOGLE_CLIENT_ID,
+                            scope: 'email profile',
+                            callback: handleGoogleTokenResponse
+                        });
+                        client.requestAccessToken();
+                    } else if (notification.isSkippedMoment()) {
+                        showToast('Google Sign-In was skipped', 'info');
+                    } else if (notification.isDismissedMoment()) {
+                        showToast('Google Sign-In was dismissed', 'info');
+                    }
+                });
+            } catch (error) {
+                console.error('Google Sign-In error:', error);
+                showToast('⚠️ Google Sign-In failed. Please try again.', 'error');
+            }
+        }
+        
+        function handleGoogleCredentialResponse(response) {
+            // Decode the JWT credential
+            const credential = response.credential;
+            const payload = JSON.parse(atob(credential.split('.')[1]));
+            
+            const user = {
+                uid: 'google_' + payload.sub,
+                displayName: payload.name,
+                email: payload.email,
+                photoURL: payload.picture,
+                provider: 'google',
+                authTime: new Date().toISOString()
+            };
+            
+            showToast(`✓ Welcome, ${user.displayName}!`, 'success');
+            completeAuth(user, false);
+        }
+        
+        async function handleGoogleTokenResponse(tokenResponse) {
+            if (tokenResponse.access_token) {
+                try {
+                    // Fetch user info from Google
+                    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                    });
+                    const userInfo = await userInfoResponse.json();
+                    
+                    const user = {
+                        uid: 'google_' + userInfo.sub,
+                        displayName: userInfo.name,
+                        email: userInfo.email,
+                        photoURL: userInfo.picture,
+                        provider: 'google',
+                        authTime: new Date().toISOString()
+                    };
+                    
+                    showToast(`✓ Welcome, ${user.displayName}!`, 'success');
+                    completeAuth(user, false);
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                    showToast('⚠️ Failed to get user info', 'error');
+                }
+            }
         }
         
         function closeOauthModal() {

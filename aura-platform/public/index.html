@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.6.0/dist/socket.io.min.js"></script>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -2727,20 +2729,87 @@
             if (e.target.id === 'authModal') closeModal();
         });
 
+        // Google OAuth Configuration
+        const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
+        
+        function initGoogleAuth() {
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleCredentialResponse,
+                    auto_select: false,
+                    cancel_on_tap_outside: true
+                });
+            }
+        }
+        
+        // Initialize Google Auth after page loads
+        setTimeout(initGoogleAuth, 1000);
+        
         async function signInWithGoogle() {
-            showToast('Signing in with Google...', 'info');
+            showToast('Connecting to Google...', 'info');
             
-            // Simulate OAuth flow
-            await new Promise(r => setTimeout(r, 1000));
+            if (typeof google === 'undefined' || !google.accounts) {
+                showToast('Google Sign-In is loading, please try again...', 'error');
+                setTimeout(initGoogleAuth, 100);
+                return;
+            }
             
+            try {
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed()) {
+                        // One Tap not available, use token client
+                        const client = google.accounts.oauth2.initTokenClient({
+                            client_id: GOOGLE_CLIENT_ID,
+                            scope: 'email profile',
+                            callback: handleGoogleTokenResponse
+                        });
+                        client.requestAccessToken();
+                    } else if (notification.isSkippedMoment() || notification.isDismissedMoment()) {
+                        showToast('Please allow Google Sign-In popup', 'info');
+                    }
+                });
+            } catch (error) {
+                console.error('Google Sign-In error:', error);
+                showToast('Google Sign-In failed. Please try email login.', 'error');
+            }
+        }
+        
+        function handleGoogleCredentialResponse(response) {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
             const user = {
-                uid: 'google_' + Date.now(),
-                displayName: 'Google User',
-                email: 'user@gmail.com',
-                provider: 'google'
+                uid: 'google_' + payload.sub,
+                displayName: payload.name,
+                email: payload.email,
+                photoURL: payload.picture,
+                provider: 'google',
+                authTime: new Date().toISOString()
             };
-            
+            showToast(`Welcome, ${user.displayName}!`, 'success');
             completeAuth(user);
+        }
+        
+        async function handleGoogleTokenResponse(tokenResponse) {
+            if (tokenResponse.access_token) {
+                try {
+                    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                    });
+                    const userInfo = await res.json();
+                    const user = {
+                        uid: 'google_' + userInfo.sub,
+                        displayName: userInfo.name,
+                        email: userInfo.email,
+                        photoURL: userInfo.picture,
+                        provider: 'google',
+                        authTime: new Date().toISOString()
+                    };
+                    showToast(`Welcome, ${user.displayName}!`, 'success');
+                    completeAuth(user);
+                } catch (error) {
+                    showToast('Failed to get user info', 'error');
+                }
+            }
         }
 
         async function signInWithEmail() {
