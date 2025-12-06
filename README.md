@@ -137,8 +137,8 @@ AURA's intelligence comes from **5 specialized AI agents** powered by Azure Open
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/yourusername/AURA-THE-FINANCE-AI.git
-cd AURA-THE-FINANCE-AI
+git clone https://github.com/Aryanjstar/AURA---THE-FINANCE-AI.git
+cd AURA---THE-FINANCE-AI
 
 # 2. Install dependencies
 cd aura-platform
@@ -221,7 +221,7 @@ az webapp config appsettings set --resource-group aura-rg --name aura-finance --
 
 # Deploy from GitHub
 az webapp deployment source config --name aura-finance --resource-group aura-rg \
-  --repo-url https://github.com/yourusername/AURA-THE-FINANCE-AI \
+  --repo-url https://github.com/Aryanjstar/AURA---THE-FINANCE-AI \
   --branch main --manual-integration
 ```
 
@@ -345,10 +345,10 @@ AURA-THE-FINANCE-AI/
 
 <div align="center">
 
-**Built with ❤️ by Aryan Jaiswal**
+**Built with ❤️ by Team Trinethra**
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-aryanjaiswal.me-00D4FF?style=for-the-badge)](https://aryanjaiswal.me)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/aryanjaiswal)
+[![GitHub](https://img.shields.io/badge/GitHub-Aryanjstar-181717?style=for-the-badge&logo=github)](https://github.com/Aryanjstar/AURA---THE-FINANCE-AI)
+[![Live Demo](https://img.shields.io/badge/Live-aura--finance--ai.azurewebsites.net-00D4FF?style=for-the-badge)](https://aura-finance-ai.azurewebsites.net)
 
 _Making financial intelligence accessible to everyone_ 🚀
 

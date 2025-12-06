@@ -6,7 +6,7 @@
  * multi-agent orchestration, and Fi.Money MCP integration.
  * 
  * Built by Aryan Jaiswal
- * https://aryanjaiswal.me
+ * https://
  */
 
 import express from "express";
@@ -1021,7 +1021,7 @@ server.listen(PORT, async () => {
     logger.info('🚀 AURA Financial Platform - Ready');
     logger.info('📱 Demo phones: 2222222222, 8888888888, 4444444444');
     logger.info('🔗 Fi.Money MCP: https://mcp.fi.money:8080');
-    logger.info('👤 Built by Aryan Jaiswal - https://aryanjaiswal.me');
+    logger.info('👤 Built by Aryan Jaiswal - https://aryanjaiswal.in');
     logger.divider();
 });
 
