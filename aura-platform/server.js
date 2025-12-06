@@ -811,6 +811,99 @@ app.post("/api/auth/complete-onboarding", async (req, res) => {
     }
 });
 
+// Google OAuth endpoint
+app.post("/api/auth/google", async (req, res) => {
+    try {
+        const { uid, email, displayName, photoURL } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+        
+        const emailLower = email.toLowerCase();
+        let isNewUser = false;
+        
+        // Check if user exists in MongoDB
+        let existingUser = await mongodbService.findUser(emailLower);
+        
+        // Also check local cache
+        if (!existingUser) {
+            const cachedUser = registeredUsers.get(emailLower);
+            if (cachedUser) {
+                existingUser = cachedUser;
+            }
+        }
+        
+        if (existingUser) {
+            // Existing user - update last login
+            logger.success(`Google signin: ${displayName} (${email})`);
+            
+            // Update MongoDB
+            await mongodbService.updateUser(emailLower, {
+                lastLoginAt: new Date(),
+                photoURL: photoURL || existingUser.photoURL
+            });
+            
+            res.json({
+                success: true,
+                isNewUser: false,
+                user: {
+                    uid: existingUser.firebaseUid || existingUser.uid || uid,
+                    email: existingUser.email,
+                    displayName: existingUser.displayName || displayName,
+                    photoURL: photoURL || existingUser.photoURL,
+                    hasCompletedOnboarding: existingUser.onboardingComplete || existingUser.hasCompletedOnboarding || false,
+                    provider: 'google'
+                }
+            });
+        } else {
+            // New user - create account
+            logger.success(`New Google signup: ${displayName} (${email})`);
+            isNewUser = true;
+            
+            const newUser = {
+                uid: uid,
+                email: emailLower,
+                displayName: displayName,
+                photoURL: photoURL,
+                provider: 'google',
+                hasCompletedOnboarding: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Store in local cache
+            registeredUsers.set(emailLower, newUser);
+            
+            // Store in MongoDB
+            await mongodbService.createUser({
+                firebaseUid: uid,
+                email: emailLower,
+                displayName: displayName,
+                photoURL: photoURL,
+                provider: 'google',
+                onboardingComplete: false,
+                createdAt: new Date()
+            });
+            
+            res.json({
+                success: true,
+                isNewUser: true,
+                user: {
+                    uid: uid,
+                    email: emailLower,
+                    displayName: displayName,
+                    photoURL: photoURL,
+                    hasCompletedOnboarding: false,
+                    provider: 'google'
+                }
+            });
+        }
+    } catch (error) {
+        logger.error('Google auth error', error);
+        res.status(500).json({ message: 'Google authentication failed' });
+    }
+});
+
 app.post("/api/auth/verify-token", async (req, res) => {
     try {
         const { idToken, userData } = req.body;

@@ -2775,39 +2775,74 @@
             }
         }
         
-        function handleGoogleCredentialResponse(response) {
+        async function handleGoogleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            const user = {
-                uid: 'google_' + payload.sub,
-                displayName: payload.name,
-                email: payload.email,
-                photoURL: payload.picture,
-                provider: 'google',
-                authTime: new Date().toISOString()
-            };
-            showToast(`Welcome, ${user.displayName}!`, 'success');
-            completeAuth(user);
+            showToast('Verifying...', 'info');
+            
+            try {
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: 'google_' + payload.sub,
+                        email: payload.email,
+                        displayName: payload.name,
+                        photoURL: payload.picture
+                    })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Auth failed');
+                
+                const user = {
+                    uid: data.user.uid,
+                    displayName: data.user.displayName,
+                    email: data.user.email,
+                    photoURL: data.user.photoURL,
+                    provider: 'google',
+                    hasCompletedOnboarding: data.user.hasCompletedOnboarding || false
+                };
+                
+                completeAuth(user, data.isNewUser);
+            } catch (error) {
+                showToast('Auth failed: ' + error.message, 'error');
+            }
         }
         
         async function handleGoogleTokenResponse(tokenResponse) {
             if (tokenResponse.access_token) {
                 try {
-                    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                         headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
                     });
-                    const userInfo = await res.json();
+                    const userInfo = await userRes.json();
+                    
+                    const res = await fetch('/api/auth/google', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            uid: 'google_' + userInfo.sub,
+                            email: userInfo.email,
+                            displayName: userInfo.name,
+                            photoURL: userInfo.picture
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message || 'Auth failed');
+                    
                     const user = {
-                        uid: 'google_' + userInfo.sub,
-                        displayName: userInfo.name,
-                        email: userInfo.email,
-                        photoURL: userInfo.picture,
+                        uid: data.user.uid,
+                        displayName: data.user.displayName,
+                        email: data.user.email,
+                        photoURL: data.user.photoURL,
                         provider: 'google',
-                        authTime: new Date().toISOString()
+                        hasCompletedOnboarding: data.user.hasCompletedOnboarding || false
                     };
-                    showToast(`Welcome, ${user.displayName}!`, 'success');
-                    completeAuth(user);
+                    
+                    completeAuth(user, data.isNewUser);
                 } catch (error) {
-                    showToast('Failed to get user info', 'error');
+                    showToast('Failed to authenticate', 'error');
                 }
             }
         }
@@ -2852,12 +2887,23 @@
             completeAuth(user);
         }
 
-        function completeAuth(user) {
+        function completeAuth(user, isNewUser = false) {
             localStorage.setItem('aura_user', JSON.stringify(user));
             currentUser = user;
             closeModal();
-            updateUIForUser();
-            showToast(`👋 Welcome, ${user.displayName}!`, 'success');
+            
+            // Check if user needs onboarding
+            const needsOnboarding = (isNewUser || !user.hasCompletedOnboarding) && !user.isDemo;
+            
+            if (needsOnboarding) {
+                showToast('✨ Redirecting to setup...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/onboarding.html';
+                }, 500);
+            } else {
+                updateUIForUser();
+                showToast(`👋 Welcome back, ${user.displayName}!`, 'success');
+            }
         }
 
         function logout() {
