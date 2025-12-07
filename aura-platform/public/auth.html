@@ -873,57 +873,89 @@
 
         // Google OAuth Configuration
         const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
-        let googleTokenClient = null;
+        let googleInitialized = false;
         
         function initGoogleAuth() {
+            if (googleInitialized) return;
             if (typeof google === 'undefined' || !google.accounts) return;
             
-            // Initialize ID service for One Tap
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredentialResponse
+                callback: handleGoogleCredentialResponse,
+                auto_select: false,
+                cancel_on_tap_outside: false,
+                use_fedcm_for_prompt: false  // Disable FedCM - use classic popup
             });
             
-            // Initialize OAuth2 token client
-            googleTokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: GOOGLE_CLIENT_ID,
-                scope: 'email profile',
-                callback: handleGoogleTokenResponse,
-                error_callback: (error) => {
-                    console.log('Google OAuth error callback:', error);
-                    if (error.type === 'popup_closed') {
-                        showToast('Sign-in cancelled. Please try again.', 'info');
-                    } else {
-                        showToast('⚠️ Google sign-in failed. Try email login.', 'error');
-                    }
-                }
-            });
-            
-            console.log('Google Auth initialized');
+            googleInitialized = true;
+            console.log('Google Auth initialized (ID token mode)');
         }
         
         // Initialize when Google script loads
-        window.addEventListener('load', () => {
-            const interval = setInterval(() => {
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkInterval = setInterval(() => {
                 if (typeof google !== 'undefined' && google.accounts) {
-                    clearInterval(interval);
+                    clearInterval(checkInterval);
                     initGoogleAuth();
                 }
-            }, 100);
-            setTimeout(() => clearInterval(interval), 5000);
+            }, 200);
+            setTimeout(() => clearInterval(checkInterval), 10000);
         });
         
         function signInWithGoogle() {
-            if (!googleTokenClient) {
+            if (typeof google === 'undefined' || !google.accounts) {
+                showToast('Google loading... please wait', 'info');
+                setTimeout(signInWithGoogle, 500);
+                return;
+            }
+            
+            if (!googleInitialized) {
                 initGoogleAuth();
-                if (!googleTokenClient) {
-                    showToast('Google Sign-In loading, please wait...', 'info');
-                    return;
-                }
             }
             
             showToast('🔐 Opening Google Sign-In...', 'info');
-            googleTokenClient.requestAccessToken({ prompt: 'select_account' });
+            
+            // Use Google One Tap prompt - most reliable method
+            google.accounts.id.prompt((notification) => {
+                console.log('Google prompt notification:', notification);
+                
+                if (notification.isNotDisplayed()) {
+                    console.log('Not displayed reason:', notification.getNotDisplayedReason());
+                    // Fallback to manual popup if One Tap not available
+                    showToast('Opening Google popup...', 'info');
+                    openGooglePopupFallback();
+                } else if (notification.isSkippedMoment()) {
+                    console.log('Skipped reason:', notification.getSkippedMoment());
+                    showToast('Google popup skipped. Try again.', 'info');
+                } else if (notification.isDismissedMoment()) {
+                    const reason = notification.getDismissedReason();
+                    console.log('Dismissed reason:', reason);
+                    if (reason === 'credential_returned') {
+                        // Success - callback will handle it
+                    } else {
+                        showToast('Sign-in cancelled', 'info');
+                    }
+                }
+            });
+        }
+        
+        // Fallback for when One Tap doesn't work
+        function openGooglePopupFallback() {
+            // Use OAuth2 popup as fallback
+            const tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: 'openid email profile',
+                callback: handleGoogleTokenResponse,
+                error_callback: (error) => {
+                    console.log('OAuth fallback error:', error);
+                    if (error.type === 'popup_closed') {
+                        showToast('Sign-in popup was closed', 'info');
+                    } else {
+                        showToast('Google sign-in failed. Try email login.', 'error');
+                    }
+                }
+            });
+            tokenClient.requestAccessToken();
         }
         
         async function handleGoogleCredentialResponse(response) {
@@ -977,21 +1009,33 @@
         }
         
         async function handleGoogleTokenResponse(tokenResponse) {
-            if (!tokenResponse.access_token) {
-                showToast('⚠️ Sign-in failed', 'error');
+            console.log('handleGoogleTokenResponse called', tokenResponse ? 'with token' : 'no token');
+            
+            if (!tokenResponse || !tokenResponse.access_token) {
+                console.error('No access token received');
+                showToast('⚠️ Sign-in failed - no token', 'error');
                 return;
             }
             
-            showToast('🔐 Signing you in...', 'info');
+            showToast('🔐 Verifying...', 'info');
             
             try {
                 // Get user info from Google
+                console.log('Fetching user info from Google...');
                 const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                     headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
                 });
+                
+                if (!userRes.ok) {
+                    throw new Error('Google API error: ' + userRes.status);
+                }
+                
                 const userInfo = await userRes.json();
+                console.log('Got user info:', userInfo.email);
                 
                 if (!userInfo.email) throw new Error('No email from Google');
+                
+                showToast('🔐 Creating account...', 'info');
                 
                 // Register/login with backend
                 const res = await fetch('/api/auth/google', {
@@ -1006,6 +1050,8 @@
                 });
                 
                 const data = await res.json();
+                console.log('Backend response:', data);
+                
                 if (!res.ok) throw new Error(data.message || 'Auth failed');
                 
                 const user = {
