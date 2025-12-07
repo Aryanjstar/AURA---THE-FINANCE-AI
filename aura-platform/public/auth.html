@@ -985,52 +985,80 @@
         }
         
         async function handleGoogleTokenResponse(tokenResponse) {
-            if (tokenResponse.access_token) {
-                try {
-                    showToast('🔐 Getting user info...', 'info');
-                    
-                    // Fetch user info from Google
-                    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-                    });
-                    const userInfo = await userInfoResponse.json();
-                    
-                    // Call backend to register/login the Google user
-                    const res = await fetch('/api/auth/google', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            uid: 'google_' + userInfo.sub,
-                            email: userInfo.email,
-                            displayName: userInfo.name,
-                            photoURL: userInfo.picture
-                        })
-                    });
-                    
-                    const data = await res.json();
-                    
-                    if (!res.ok) {
-                        throw new Error(data.message || 'Google authentication failed');
-                    }
-                    
-                    const user = {
-                        uid: data.user.uid,
-                        displayName: data.user.displayName,
-                        email: data.user.email,
-                        photoURL: data.user.photoURL,
-                        provider: 'google',
-                        isDemo: false,
-                        hasCompletedOnboarding: data.user.hasCompletedOnboarding || false,
-                        authTime: new Date().toISOString()
-                    };
-                    
-                    // Pass isNewUser to determine if onboarding is needed
-                    completeAuth(user, data.isNewUser);
-                    
-                } catch (error) {
-                    console.error('Error with Google auth:', error);
-                    showToast('⚠️ Failed to authenticate with Google', 'error');
+            console.log('Google token response received:', tokenResponse);
+            
+            // Check for errors first
+            if (tokenResponse.error) {
+                console.error('Google OAuth error:', tokenResponse.error);
+                showToast('⚠️ Google sign-in cancelled or failed', 'error');
+                return;
+            }
+            
+            if (!tokenResponse.access_token) {
+                console.error('No access token in response');
+                showToast('⚠️ Google sign-in failed - no token received', 'error');
+                return;
+            }
+            
+            try {
+                showToast('🔐 Getting user info...', 'info');
+                
+                // Fetch user info from Google
+                const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                
+                if (!userInfoResponse.ok) {
+                    throw new Error('Failed to get user info from Google');
                 }
+                
+                const userInfo = await userInfoResponse.json();
+                console.log('Google user info:', userInfo);
+                
+                if (!userInfo.email) {
+                    throw new Error('No email received from Google');
+                }
+                
+                showToast('🔐 Signing you in...', 'info');
+                
+                // Call backend to register/login the Google user
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: 'google_' + userInfo.sub,
+                        email: userInfo.email,
+                        displayName: userInfo.name || userInfo.email.split('@')[0],
+                        photoURL: userInfo.picture || ''
+                    })
+                });
+                
+                const data = await res.json();
+                console.log('Backend auth response:', data);
+                
+                if (!res.ok) {
+                    throw new Error(data.message || 'Google authentication failed');
+                }
+                
+                const user = {
+                    uid: data.user.uid,
+                    displayName: data.user.displayName,
+                    email: data.user.email,
+                    photoURL: data.user.photoURL,
+                    provider: 'google',
+                    isDemo: false,
+                    hasCompletedOnboarding: data.user.hasCompletedOnboarding || false,
+                    authTime: new Date().toISOString()
+                };
+                
+                showToast('✅ Sign-in successful!', 'success');
+                
+                // Pass isNewUser to determine if onboarding is needed
+                completeAuth(user, data.isNewUser);
+                
+            } catch (error) {
+                console.error('Error with Google auth:', error);
+                showToast('⚠️ ' + (error.message || 'Failed to authenticate with Google'), 'error');
             }
         }
         

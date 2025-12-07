@@ -2820,40 +2820,58 @@
         }
         
         async function handleGoogleTokenResponse(tokenResponse) {
-            if (tokenResponse.access_token) {
-                try {
-                    const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-                    });
-                    const userInfo = await userRes.json();
-                    
-                    const res = await fetch('/api/auth/google', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            uid: 'google_' + userInfo.sub,
-                            email: userInfo.email,
-                            displayName: userInfo.name,
-                            photoURL: userInfo.picture
-                        })
-                    });
-                    
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.message || 'Auth failed');
-                    
-                    const user = {
-                        uid: data.user.uid,
-                        displayName: data.user.displayName,
-                        email: data.user.email,
-                        photoURL: data.user.photoURL,
-                        provider: 'google',
-                        hasCompletedOnboarding: data.user.hasCompletedOnboarding || false
-                    };
-                    
-                    completeAuth(user, data.isNewUser);
-                } catch (error) {
-                    showToast('Failed to authenticate', 'error');
+            console.log('Google token response:', tokenResponse);
+            
+            if (tokenResponse.error) {
+                showToast('Google sign-in cancelled', 'info');
+                return;
+            }
+            
+            if (!tokenResponse.access_token) {
+                showToast('Google sign-in failed', 'error');
+                return;
+            }
+            
+            try {
+                showToast('Signing you in...', 'info');
+                
+                const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const userInfo = await userRes.json();
+                
+                if (!userInfo.email) {
+                    throw new Error('No email from Google');
                 }
+                
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: 'google_' + userInfo.sub,
+                        email: userInfo.email,
+                        displayName: userInfo.name || userInfo.email.split('@')[0],
+                        photoURL: userInfo.picture || ''
+                    })
+                });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Auth failed');
+                
+                const user = {
+                    uid: data.user.uid,
+                    displayName: data.user.displayName,
+                    email: data.user.email,
+                    photoURL: data.user.photoURL,
+                    provider: 'google',
+                    hasCompletedOnboarding: data.user.hasCompletedOnboarding || false
+                };
+                
+                showToast('✅ Sign-in successful!', 'success');
+                completeAuth(user, data.isNewUser);
+            } catch (error) {
+                console.error('Google auth error:', error);
+                showToast('Failed to authenticate: ' + error.message, 'error');
             }
         }
 
