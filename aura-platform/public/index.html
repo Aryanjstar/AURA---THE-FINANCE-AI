@@ -2731,26 +2731,30 @@
 
         // Google OAuth Configuration
         const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
-        let googleInitialized = false;
+        let googleTokenClient = null;
         
         function initGoogleAuth() {
-            if (googleInitialized) return;
-            if (typeof google === 'undefined' || !google.accounts) return;
+            if (googleTokenClient) return;
+            if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) return;
             
-            google.accounts.id.initialize({
+            googleTokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: GOOGLE_CLIENT_ID,
-                callback: handleGoogleCredentialResponse,
-                auto_select: false,
-                use_fedcm_for_prompt: false
+                scope: 'openid email profile',
+                callback: handleGoogleTokenResponse,
+                error_callback: (error) => {
+                    if (error.type === 'popup_closed') {
+                        showToast('Sign-in cancelled', 'info');
+                    } else {
+                        showToast('Google sign-in failed', 'error');
+                    }
+                }
             });
-            
-            googleInitialized = true;
         }
         
         // Initialize Google Auth after page loads
         document.addEventListener('DOMContentLoaded', () => {
             const checkGoogleInterval = setInterval(() => {
-                if (typeof google !== 'undefined' && google.accounts) {
+                if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
                     clearInterval(checkGoogleInterval);
                     initGoogleAuth();
                 }
@@ -2759,24 +2763,13 @@
         });
         
         function signInWithGoogle() {
-            if (!googleInitialized) initGoogleAuth();
-            showToast('Opening Google...', 'info');
-            google.accounts.id.prompt((notification) => {
-                if (notification.isNotDisplayed()) {
-                    // Fallback to OAuth2 popup
-                    const tokenClient = google.accounts.oauth2.initTokenClient({
-                        client_id: GOOGLE_CLIENT_ID,
-                        scope: 'openid email profile',
-                        callback: handleGoogleTokenResponse,
-                        error_callback: (e) => {
-                            showToast(e.type === 'popup_closed' ? 'Cancelled' : 'Failed', 'info');
-                        }
-                    });
-                    tokenClient.requestAccessToken();
-                } else if (notification.isDismissedMoment() && notification.getDismissedReason() !== 'credential_returned') {
-                    showToast('Cancelled', 'info');
-                }
-            });
+            if (!googleTokenClient) initGoogleAuth();
+            if (googleTokenClient) {
+                showToast('Opening Google...', 'info');
+                googleTokenClient.requestAccessToken();
+            } else {
+                showToast('Google loading...', 'info');
+            }
         }
         
         async function handleGoogleCredentialResponse(response) {
