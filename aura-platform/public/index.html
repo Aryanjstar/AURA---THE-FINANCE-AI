@@ -2732,34 +2732,27 @@
         // Google OAuth Configuration
         const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
         let googleTokenClient = null;
-        let googleAuthInitialized = false;
         
         function initGoogleAuth() {
-            if (googleAuthInitialized) return;
-            if (typeof google !== 'undefined' && google.accounts) {
-                google.accounts.id.initialize({
-                    client_id: GOOGLE_CLIENT_ID,
-                    callback: handleGoogleCredentialResponse,
-                    auto_select: false,
-                    cancel_on_tap_outside: true,
-                    use_fedcm_for_prompt: true
-                });
-                
-                try {
-                    googleTokenClient = google.accounts.oauth2.initTokenClient({
-                        client_id: GOOGLE_CLIENT_ID,
-                        scope: 'email profile openid',
-                        callback: handleGoogleTokenResponse,
-                        error_callback: (error) => {
-                            console.error('Google OAuth error:', error);
-                            showToast('Google sign-in failed', 'error');
-                        }
-                    });
-                } catch (e) {
-                    console.warn('Token client init failed:', e);
+            if (typeof google === 'undefined' || !google.accounts) return;
+            
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredentialResponse
+            });
+            
+            googleTokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: 'email profile',
+                callback: handleGoogleTokenResponse,
+                error_callback: (error) => {
+                    if (error.type === 'popup_closed') {
+                        showToast('Sign-in cancelled', 'info');
+                    } else {
+                        showToast('Google sign-in failed', 'error');
+                    }
                 }
-                googleAuthInitialized = true;
-            }
+            });
         }
         
         // Initialize Google Auth after page loads
@@ -2771,32 +2764,16 @@
         }, 100);
         setTimeout(() => clearInterval(checkGoogleInterval), 5000);
         
-        async function signInWithGoogle() {
-            showToast('Connecting to Google...', 'info');
-            
-            if (typeof google === 'undefined' || !google.accounts) {
-                showToast('Google Sign-In is loading...', 'error');
-                return;
+        function signInWithGoogle() {
+            if (!googleTokenClient) {
+                initGoogleAuth();
+                if (!googleTokenClient) {
+                    showToast('Google loading, please wait...', 'info');
+                    return;
+                }
             }
-            
-            if (!googleAuthInitialized) initGoogleAuth();
-            
-            try {
-                google.accounts.id.prompt((notification) => {
-                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                        if (googleTokenClient) {
-                            googleTokenClient.requestAccessToken();
-                        }
-                    } else if (notification.isDismissedMoment()) {
-                        if (notification.getDismissedReason() !== 'credential_returned') {
-                            showToast('Sign-in cancelled', 'info');
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Google Sign-In error:', error);
-                if (googleTokenClient) googleTokenClient.requestAccessToken();
-            }
+            showToast('Opening Google Sign-In...', 'info');
+            googleTokenClient.requestAccessToken({ prompt: 'select_account' });
         }
         
         async function handleGoogleCredentialResponse(response) {
