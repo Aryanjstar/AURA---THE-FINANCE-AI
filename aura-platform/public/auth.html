@@ -889,7 +889,11 @@
                 googleTokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: GOOGLE_CLIENT_ID,
                     scope: 'email profile openid',
-                    callback: handleGoogleTokenResponse
+                    callback: handleGoogleTokenResponse,
+                    error_callback: (error) => {
+                        console.error('Google OAuth error callback:', error);
+                        showToast('⚠️ Google sign-in failed: ' + (error.message || error.type || 'Unknown error'), 'error');
+                    }
                 });
                 
                 console.log('✅ Google Auth initialized');
