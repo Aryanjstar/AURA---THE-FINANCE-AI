@@ -2732,26 +2732,33 @@
         // Google OAuth Configuration
         const GOOGLE_CLIENT_ID = '603198382455-id7ra9or2rsq2nlq2ck1ha5pr73c1of8.apps.googleusercontent.com';
         let googleTokenClient = null;
+        let googleAuthInitialized = false;
         
         function initGoogleAuth() {
+            if (googleAuthInitialized) return;
             if (typeof google !== 'undefined' && google.accounts) {
                 google.accounts.id.initialize({
                     client_id: GOOGLE_CLIENT_ID,
                     callback: handleGoogleCredentialResponse,
                     auto_select: false,
-                    cancel_on_tap_outside: true
+                    cancel_on_tap_outside: true,
+                    use_fedcm_for_prompt: true
                 });
                 
-                // Pre-initialize OAuth2 token client
-                googleTokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_CLIENT_ID,
-                    scope: 'email profile openid',
-                    callback: handleGoogleTokenResponse,
-                    error_callback: (error) => {
-                        console.error('Google OAuth error:', error);
-                        showToast('Google sign-in failed', 'error');
-                    }
-                });
+                try {
+                    googleTokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: GOOGLE_CLIENT_ID,
+                        scope: 'email profile openid',
+                        callback: handleGoogleTokenResponse,
+                        error_callback: (error) => {
+                            console.error('Google OAuth error:', error);
+                            showToast('Google sign-in failed', 'error');
+                        }
+                    });
+                } catch (e) {
+                    console.warn('Token client init failed:', e);
+                }
+                googleAuthInitialized = true;
             }
         }
         
@@ -2768,24 +2775,27 @@
             showToast('Connecting to Google...', 'info');
             
             if (typeof google === 'undefined' || !google.accounts) {
-                showToast('Google Sign-In is loading, please wait...', 'error');
+                showToast('Google Sign-In is loading...', 'error');
                 return;
             }
             
+            if (!googleAuthInitialized) initGoogleAuth();
+            
             try {
-                if (googleTokenClient) {
-                    googleTokenClient.requestAccessToken();
-                } else {
-                    const client = google.accounts.oauth2.initTokenClient({
-                        client_id: GOOGLE_CLIENT_ID,
-                        scope: 'email profile openid',
-                        callback: handleGoogleTokenResponse
-                    });
-                    client.requestAccessToken();
-                }
+                google.accounts.id.prompt((notification) => {
+                    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                        if (googleTokenClient) {
+                            googleTokenClient.requestAccessToken();
+                        }
+                    } else if (notification.isDismissedMoment()) {
+                        if (notification.getDismissedReason() !== 'credential_returned') {
+                            showToast('Sign-in cancelled', 'info');
+                        }
+                    }
+                });
             } catch (error) {
                 console.error('Google Sign-In error:', error);
-                showToast('Google Sign-In failed. Please try email login.', 'error');
+                if (googleTokenClient) googleTokenClient.requestAccessToken();
             }
         }
         
