@@ -30,7 +30,7 @@ https://github.com/user-attachments/assets/9b51bcbc-746c-40b7-bed6-de4b6bc509ea
 
 
 <p align="center">
-  ▶️ Prefer YouTube? <a href="https://youtu.be/t_e-CtLxn_Q">Watch it here</a>
+  ▶️ Prefer YouTube? <a href="https://youtu.be/3q4uTliRNr8">Watch it here</a>
 </p>
 
 ---
