@@ -16,6 +16,25 @@ _Powered by Azure OpenAI GPT-4.1 & Multi-Agent Architecture with Fi.Money MCP In
 
 ---
 
+### 🎬 Video Walkthrough  
+See AI Career Navigator in action!
+
+🔇 *Note: The GitHub-hosted video below may be muted by default due to browser restrictions. Please unmute to hear the audio.*
+
+
+Uploading AURA_Walkthrohjugh.mov…
+
+
+📽️ Demo Video:  
+
+
+
+<p align="center">
+  ▶️ Prefer YouTube? <a href="https://youtu.be/t_e-CtLxn_Q">Watch it here</a>
+</p>
+
+---
+
 ## 📋 Table of Contents
 
 - [🎯 Overview](#-overview)
