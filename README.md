@@ -21,9 +21,7 @@ See AI Career Navigator in action!
 
 🔇 *Note: The GitHub-hosted video below may be muted by default due to browser restrictions. Please unmute to hear the audio.*
 
-
-Uploading AURA_Walkthrohjugh.mov…
-
+https://github.com/user-attachments/assets/81621f30-77b5-4366-8fff-0dce95261a44
 
 📽️ Demo Video:  
 
